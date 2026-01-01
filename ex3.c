@@ -58,6 +58,14 @@ int main() {
     return 0;
 }
 
+void initBoard(char board[][COLS], int rows, int cols) {
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            board[r][c] = EMPTY;
+        }
+    }
+}
+
 void printBoard(char board[][COLS], int rows, int cols) {
     printf("\n");
     for (int r = 0; r < rows; r++) {
@@ -90,4 +98,77 @@ int getPlayerType(int playerNumber) {
         printf("Invalid selection. Enter h or c.\n");
         while (getchar() != '\n'); // clear rest of input
     }
+}
+
+void runConnectFour(char board[][COLS], int rows, int cols, int p1Type, int p2Type) {
+    int currentPlayer = 1;
+    int column;
+    char token, isVictorious, isHuman;
+    while (1){
+        if (currentPlayer = 1)
+        {
+            token = TOKEN_P1;
+            isHuman = (p1Type == HUMAN);
+        }
+        else
+        {
+            token = TOKEN_P2;
+            isHuman = (p2Type == HUMAN);
+        }
+        printf("Player %d (%c) turn.\n", currentPlayer, token);
+        if (isHuman) {
+                printf("Enter column (1-%d):", cols);
+                column = humanChoose(board, rows, cols);
+            }
+            else {
+                // column = computerChoose(board, rows, cols, char, char);
+                // check if computer needs validation of column
+            }
+        makeMove(board, rows, cols, column, token);
+        printBoard(board, rows, cols);
+
+        // actually, checkVictory may be called inside if, and not provide winner variable, since the winner is the current player
+        /*if (checkVictory(char[][COLS], int, int, int, int, char) {
+            printf("Player %d (%c) wins!\n", currentPlayer, token);
+            break;
+        }*/
+        if (isBoardFull(board, rows, cols)) {
+            printf("Board full and no winner. It's a tie!\n");
+            break;
+        }
+
+        // swap players
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
+    }
+
+}
+
+int makeMove(char board[][COLS], int rows, int cols, int column, char token) {
+    int freeRow = getFreeRow(board, rows, cols, column);
+    if (freeRow != -1) {
+        board[freeRow][column] = token;
+    }
+    return freeRow;    
+}
+
+int getFreeRow(char board[][COLS], int rows, int cols, int column) {
+    for (int r = rows - 1; r >= 0; r--) {
+        if (board[r][column] == EMPTY) {
+            return r;
+        }
+    }
+    return -1;
+}
+
+int isColumnFull(char board[][COLS], int rows, int cols, int column) {
+    return board[rows-1][column] != EMPTY;
+}
+
+int isBoardFull(char board[][COLS], int rows, int cols) {
+    for (int column = 0; column < cols; column++) {
+        if (isColumnFull(board, rows, cols, column) == 0) {
+            return 0;
+        }
+    }
+    return 1;
 }
