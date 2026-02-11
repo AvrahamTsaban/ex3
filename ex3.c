@@ -15,7 +15,11 @@ Assignment: 3
 #define COLS 7
 #endif
 
+#define VECTOR_LEN 2
+
+#ifndef CONNECT_N
 #define CONNECT_N 4
+#endif
 
 /* Tokens */
 #define EMPTY '.'
@@ -194,7 +198,7 @@ int lineLength(char board[][COLS], int rows, int cols, int row, int column, char
     for the longest line of consecutive tokens of the same type as 'token'. 
     Returns the length of the longest line found. */
     // define direction vectors for right, down-right, down, down-left as an array of (y,x) pairs
-    const int directions[4][2] = {{0,1},{1,1},{1,0},{1,-1}};
+    const int directions[][VECTOR_LEN] = {{0,1},{1,1},{1,0},{1,-1}};
     // define constants for direction processing
     const int directionsNum = 4;
     const int yAxis = 0;
