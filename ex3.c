@@ -88,18 +88,18 @@ void printBoard(char board[][COLS], int rows, int cols) {
 }
 
 int getPlayerType(int playerNumber) {
-    // prompts the user to select player type (human or computer) for the given player number.
+    /* Prompts the user to select the type for a player (human or computer) and validates the input.
+    Returns HUMAN (1) if the user selects human, COMPUTER (2) if the user selects computer.
+    Continues to prompt until a valid selection is made. */
     char ch;
     while (TRUE) {
         printf("Choose type for player %d: h - human, c - computer: ", playerNumber);
         int n = scanf(" %c", &ch);
-        // validate input
         if (n != TRUE) {
             printf("Input error. Try again.\n");
             while (getchar() != '\n'); // clear input buffer
             continue;
         }
-        // parse input and return corresponding type
         if (ch == 'h' || ch == 'H') return HUMAN;
         if (ch == 'c' || ch == 'C') return COMPUTER;
 
@@ -107,6 +107,7 @@ int getPlayerType(int playerNumber) {
         while (getchar() != '\n'); // clear rest of input
     }
 }
+
 
 void runConnectFour(char board[][COLS], int rows, int cols, int p1Type, int p2Type) {
     // main game loop. alternates turns between players until win or tie.
@@ -282,30 +283,22 @@ int humanChoice(char board[][COLS], int cols) {
 }
 
 int humanInput(int cols) {
-    /* Prompts the human player to enter a column number between 1 and cols (inclusive).
-    Validates the input to ensure it is a number. Repeats the prompt until a valid number is entered.
-    Returns the chosen column number as an integer.
-    Return value is not validated for bounds yet. */
-    while (TRUE) {
-        // prompt user for input
-        printf("Enter column (1-%d): ", cols);
-        int choose, check;
-        check = scanf("%d", &choose);
+    /* Prompts the user to enter a column number (1-based) and validates that the input is a number.
+    If the input is not a number, it clears the input buffer and prompts again until a valid number is entered. Returns the valid column number (1-based). */
+    printf("Enter column (1-%d): ", cols);
+    int choose, check = FALSE;
+    check = scanf("%d", &choose);
+    while (!check) {
         // validate input is a number, else clear input buffer and reprompt
-        if (check != TRUE) {
-            printf("Invalid input. Enter a number.\n");
-            while (getchar() != '\n') {
-                continue;
-            }
-            continue;
-        }
-        // In case of proper input, clear rest of input buffer and return value
-        while (getchar() != '\n') {
-            continue;
-        }
-        return choose;
+        printf("Invalid input. Enter a number.\n");
+        printf("Enter column (1-%d): ", cols);
+        while (getchar() != '\n'); // clear input buffer
+        check = scanf("%d", &choose);
     }
 
+    // In case of proper input, clear rest of input buffer and return value
+    while (getchar() != '\n'); // clear rest of input buffer
+    return choose;
 }
 
 int isInBounds(int cols, int column) {
