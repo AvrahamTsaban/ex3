@@ -7,13 +7,13 @@ The doc: https://docs.google.com/document/d/1XuCF9WUz8-6libxW4x2agrnJtV9_YrDDJ7Y
  ***********************************************************/
 
 ## Quick start
-- Build (strict): `gcc -lm -std=c99 -Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wstrict-overflow=2 -Wwrite-strings -Wcast-align -Wpointer-arith -Werror -Wconversion -O2 -DNDEBUG  ex3.c -o ex3.out`
+- Build: `gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=6 -DCOLS=7 ex3.c -o ex3.out -lm`
 - Run: `./ex3.out`
 - Input: type `h` / `c` to select player types, then enter column numbers (1-based).
 
 ## Tuning (compile-time)
 - `ROWS` / `COLS` (defaults 6/7). Override at compile time, e.g.:
-  - `gcc -lm -std=c99 -Wall -Wextra -Wpedantic -Wshadow -Werror -Wconversion -DNDEBUG -DROWS=8 -DCOLS=9 ex3.c -o ex3.out`
+  - `gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=8 -DCOLS=8 ex3.c -o ex3.out -lm`
 - `CONNECT_N` (default 4)
 - Tokens: `TOKEN_P1='X'`, `TOKEN_P2='O'`, empty `'.'`
 
