@@ -1,119 +1,94 @@
-The doc: https://docs.google.com/document/d/1XuCF9WUz8-6libxW4x2agrnJtV9_YrDDJ7YEYV4Zmpc/edit?tab=t.0
+# Exercise 3 — Connect Four
 
-/***********************************************************
- * CONNECT FOUR - C IMPLEMENTATION SUMMARY
- * GAME CORE: AVRAHAM TSABAN (ID: 207088733)
- * SUMMARY REV: 1.0 (2025-11-30)
- ***********************************************************/
+## Overview
 
-## Quick start
-- Build: `gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=6 -DCOLS=7 ex3.c -o ex3.out -lm`
-- Run: `./ex3.out`
-- Input: type `h` / `c` to select player types, then enter column numbers (1-based).
+A Connect Four game implemented in C, supporting configurable board dimensions via compile-time flags. The game allows any combination of human and computer players, with an AI that uses a priority-based strategy (win → block → threaten → block threat → center preference).
 
-## Tuning (compile-time)
-- `ROWS` / `COLS` (defaults 6/7). Override at compile time, e.g.:
-  - `gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=8 -DCOLS=8 ex3.c -o ex3.out -lm`
-- `CONNECT_N` (default 4)
-- Tokens: `TOKEN_P1='X'`, `TOKEN_P2='O'`, empty `'.'`
+## Author
 
-## Files
-- `ex3.c`: all gameplay logic (I/O, loop, AI, board ops).
+Avraham Tsaban
 
-## I/O contract
-- Human input: columns 1..COLS; rejects out-of-bounds / full columns with a re-prompt.
-- Board printout: grid with column indices modulo 10 on footer.
+## Compilation
 
-## AI priority (summary)
-- Win
-- Block win
-- Create threat (N-1)
-- Block threat (N-1)
-- Fallback: center-first priority ordering via `setPriority`.
+```bash
+gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=6 -DCOLS=7 ex3.c -o ex3.out -lm
+```
 
-## Testing checklist
-- Win detection: horizontal, vertical, both diagonals.
-- Tie: full board with no winner.
-- Bounds: reject columns <1 or >COLS.
-- Full column handling: re-prompt.
-- AI: confirm it blocks imminent wins and takes immediate wins.
+Board dimensions can be changed at compile time, e.g.:
 
-# 1. PROGRAM OVERVIEW
-# --------------------
-# This program implements the classic Connect Four game (4-in-a-row)
-# for a board of ROWS x COLS (default 6x7).
-# Supports two player types: HUMAN ('h') and COMPUTER ('c').
-# The game loop manages turns, move execution, and win/tie checks.
+```bash
+gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG -DROWS=8 -DCOLS=8 ex3.c -o ex3.out -lm
+```
 
-# 2. KEY FUNCTIONS AND CALL FLOW
-# --------------------------------
+## Running
 
-# 2.1 ENTRY POINT & GAME CONTROL
-# ------------------------------
-# main()
-#    - Initializes game state.
-#    - Calls getPlayerType() for P1 and P2 setup.
-#    - Calls initBoard() and printBoard().
-#    - Starts runConnectFour().
-#
-# runConnectFour()
-#    - Main game loop. Alternates turns until termination.
-#    - CALLS: humanChoice() OR computerChoose() -> makeMove()
-#    - CALLS: printBoard()
-#    - CALLS: lineLength() (Checks for win)
-#    - CALLS: isBoardFull() (Checks for tie)
+```bash
+./ex3.out
+```
 
-# 2.2 MOVE EXECUTION
-# ------------------
-# makeMove(board, rows, col, token)
-#    - Places 'token' in the lowest free row of 'col'.
-#    - RELIES ON: getFreeRow() to find the placement slot.
-#    - RETURNS: Row index of placement (or FAILURE).
+Select player types (`h` for human, `c` for computer), then enter column numbers (1-based) for human moves.
 
-# 2.3 WIN/TIE LOGIC
-# -----------------
-# lineLength(board, rows, cols, r, c, token)
-#    - THE CORE LOGIC: Checks all 4 directions (H/V/D1/D2) from (r,c)
-#      for the longest chain of 'token'.
-#    - RETURNS: The maximum length found. If >= CONNECT_N (4), it's a win.
-#
-# isBoardFull(board, cols)
-#    - Checks if ALL columns are full.
-#    - RELIES ON: isColumnFull() (Checks board[0][col] != EMPTY).
+## Features
 
-# 3. PLAYER INTERACTION (I/O)
-# -----------------------------
-# getPlayerType(playerNum)
-#    - PROMPT: Selects 'h' or 'c' for a player.
-#
-# humanChoice(board, cols)
-#    - GETS: Valid column input from humanInput().
-#    - VALIDATES: Checks isInBounds() and isColumnFull().
-#
-# computerChoose(board, rows, cols, token)
-#    - **AI STRATEGY:** Determines optimal move by priority:
-#      1. WIN (Self)
-#      2. BLOCK (Rival)
-#      3. THREAT (N-1 Self)
-#      4. BLOCK THREAT (N-1 Rival)
-#      5. PRIORITY (Center-first)
-#    - RELIES ON: setPriority() for preferred column order.
-#    - USES: getFreeRow() and lineLength() for move evaluation.
+- Configurable board dimensions (`ROWS`/`COLS`) and win sequence length (`CONNECT_N`, default 4)
+- Human input validation (out-of-bounds, full columns, non-numeric input)
+- Win detection in all four directions (horizontal, vertical, both diagonals)
+- Tie detection when the board is full
+- Computer AI with center-first priority ordering
 
-# 4. UTILITY FUNCTIONS
-# --------------------
-# initBoard(board, rows, cols)
-#    - Fills the board with EMPTY ('.') token.
-#
-# printBoard(board, rows, cols)
-#    - Outputs board state and column numbers (1-7).
-#
-# getFreeRow(board, rows, col)
-#    - Finds the lowest available row index in 'col'.
-#    - RETURNS: Row index or FAILURE (-1).
-#
-# isInBounds(cols, column)
-#    - Basic validation for column index [0, COLS-1].
-#
-# setPriority(priority[], cols)
-#    - Initializes the column search order for the AI (e.g., [3, 2, 4, 1, 5, 0, 6] for 7 cols).
+## Code Structure
+
+All code resides in a single file `ex3.c`. Board dimensions and win length are compile-time constants (`ROWS`, `COLS`, `CONNECT_N`).
+
+### Entry Point and Game Control
+
+| Function | Description |
+|----------|-------------|
+| `main()` | Initializes board, gets player types, starts game loop. *(TA-provided)* |
+| `runConnectFour(board, rows, cols, p1Type, p2Type)` | Main game loop — alternates turns, calls move functions, checks win/tie. |
+
+### Board Operations
+
+| Function | Description |
+|----------|-------------|
+| `initBoard(board, rows, cols)` | Fills all cells with `EMPTY` (`.`). |
+| `printBoard(board, rows, cols)` | Prints the board grid with column indices. *(TA-provided)* |
+| `makeMove(board, rows, column, token)` | Places token in the lowest free row of `column`. Returns row index or `FAILURE`. |
+| `getFreeRow(board, rows, column)` | Finds the lowest empty row in a column. |
+
+### Player Input
+
+| Function | Description |
+|----------|-------------|
+| `getPlayerType(playerNum)` | Prompts for `h`/`c` selection, returns `HUMAN` or `COMPUTER`. *(TA-provided)* |
+| `humanChoice(board, cols)` | Gets a valid column from the human player (validates bounds and fullness). |
+| `humanInput(cols)` | Reads and validates numeric input; clears buffer on non-numeric entries. |
+
+### Win and Tie Detection
+
+| Function | Description |
+|----------|-------------|
+| `lineLength(board, rows, cols, row, col, token)` | Checks all 4 directions (H/V/D1/D2) from `(row, col)` for the longest chain of `token`. |
+| `isColumnFull(board, column)` | Returns `TRUE` if the top cell of `column` is occupied. |
+| `isBoardFull(board, cols)` | Returns `TRUE` if all columns are full. |
+| `isInBounds(cols, column)` | Validates column index is within `[0, cols)`. |
+
+### Computer AI
+
+| Function | Description |
+|----------|-------------|
+| `computerChoose(board, rows, cols, token)` | Selects a column by priority: win → block win → create (N−1) → block (N−1) → center-first fallback. |
+| `setPriority(priority[], cols)` | Fills array with column indices ordered from center outward (left-first for ties). |
+
+## Project Files
+
+| File | Description |
+|------|-------------|
+| `ex3.c` | Source code |
+| `ex3.example` | Reference Linux executable provided by the TA |
+| `ex3_instructions.md` | Exercise instructions |
+| `examples/` | Sample output files for various board sizes (provided by the TA) |
+
+## Attribution
+
+The exercise design, specifications, and instructions were created by **Eyal Dayan**, the Teaching Assistant responsible for this assignment. The instructions file (`ex3_instructions.md`), the reference executable (`ex3.example`), and the sample outputs in `examples/` are his work. The functions `main`, `printBoard`, and `getPlayerType` in the source code were also provided by the TA. Any license in this repository applies only to the student's code implementation.
